@@ -1,14 +1,12 @@
 package pl.kuziow.mobileappwebservices.ui.controller;
 
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pl.kuziow.mobileappwebservices.shared.dto.UserDto;
 import pl.kuziow.mobileappwebservices.ui.model.request.UserDetailsRequestModel;
 import pl.kuziow.mobileappwebservices.ui.model.response.UserRest;
-import pl.kuziow.mobileappwebservices.ws.service.UserService;
-import pl.kuziow.mobileappwebservices.ws.service.impl.UserServiceImpl;
+import pl.kuziow.mobileappwebservices.service.impl.UserServiceImpl;
 
 @RestController
 @RequestMapping("/users")

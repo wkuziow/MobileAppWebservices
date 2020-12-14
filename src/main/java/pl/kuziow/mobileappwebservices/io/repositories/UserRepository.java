@@ -1,4 +1,4 @@
-package pl.kuziow.mobileappwebservices;
+package pl.kuziow.mobileappwebservices.io.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

@@ -1,4 +1,4 @@
-package pl.kuziow.mobileappwebservices.ws.service.impl;
+package pl.kuziow.mobileappwebservices.service.impl;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,11 +7,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import pl.kuziow.mobileappwebservices.UserRepository;
+import pl.kuziow.mobileappwebservices.io.repositories.UserRepository;
 import pl.kuziow.mobileappwebservices.io.entity.UserEntity;
 import pl.kuziow.mobileappwebservices.shared.Utils;
 import pl.kuziow.mobileappwebservices.shared.dto.UserDto;
-import pl.kuziow.mobileappwebservices.ws.service.UserService;
+import pl.kuziow.mobileappwebservices.service.UserService;
 
 import java.util.ArrayList;
 
@@ -43,6 +43,17 @@ public class UserServiceImpl implements UserService {
         UserDto returnValue = new UserDto();
         BeanUtils.copyProperties(storedUserDetails, returnValue);
 
+        return returnValue;
+    }
+
+    @Override
+    public UserDto getUser(String email) {
+        UserEntity userEntity = userRepository.findByEmail(email);
+
+        if (userEntity == null) throw new UsernameNotFoundException(email);
+
+        UserDto returnValue = new UserDto();
+        BeanUtils.copyProperties(userEntity, returnValue);
         return returnValue;
     }
 

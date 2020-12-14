@@ -1,4 +1,4 @@
-package pl.kuziow.mobileappwebservices.ws.security;
+package pl.kuziow.mobileappwebservices.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,6 +21,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import pl.kuziow.mobileappwebservices.SpringApplicationContext;
+import pl.kuziow.mobileappwebservices.service.UserService;
+import pl.kuziow.mobileappwebservices.shared.dto.UserDto;
 import pl.kuziow.mobileappwebservices.ui.model.request.UserLoginRequestModel;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -65,11 +68,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String token = Jwts.builder()
                 .setSubject(userName)
                 .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS512, SecurityConstants.TOKEN_SECRET )
+                .signWith(SignatureAlgorithm.HS512, SecurityConstants.TOKEN_SECRET)
                 .compact();
 
+        UserService userService = (UserService) SpringApplicationContext.getBean("userServiceImpl");
+        UserDto userDto = userService.getUser(userName);
 
         res.addHeader(SecurityConstants.HEADER_String, SecurityConstants.TOKEN_PREFIX + token);
+        res.addHeader("UserID", userDto.getUserId());
 
 
     }
