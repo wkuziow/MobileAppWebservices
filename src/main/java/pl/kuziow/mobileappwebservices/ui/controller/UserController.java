@@ -3,6 +3,7 @@ package pl.kuziow.mobileappwebservices.ui.controller;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import pl.kuziow.mobileappwebservices.service.UserService;
 import pl.kuziow.mobileappwebservices.shared.dto.UserDto;
 import pl.kuziow.mobileappwebservices.ui.model.request.UserDetailsRequestModel;
 import pl.kuziow.mobileappwebservices.ui.model.response.UserRest;
@@ -13,11 +14,14 @@ import pl.kuziow.mobileappwebservices.service.impl.UserServiceImpl;
 public class UserController {
 
     @Autowired
-    UserServiceImpl userService;
+    UserService userService;
 
-    @GetMapping
-    public String getUser(){
-        return "get user was called";
+    @GetMapping(path = "/{id}")
+    public UserRest getUser(@PathVariable String id){
+        UserRest returnValue = new UserRest();
+        UserDto userDto = userService.getUserByUserId(id);
+        BeanUtils.copyProperties(userDto,returnValue);
+        return returnValue;
     }
 
     @PostMapping

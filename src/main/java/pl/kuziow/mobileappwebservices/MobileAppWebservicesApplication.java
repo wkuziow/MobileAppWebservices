@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import pl.kuziow.mobileappwebservices.security.AppProperties;
 
 @SpringBootApplication
 public class MobileAppWebservicesApplication {
@@ -21,6 +22,11 @@ public class MobileAppWebservicesApplication {
     @Bean
     public SpringApplicationContext springApplicationContext(){
         return new SpringApplicationContext();
+    }
+
+    @Bean(name = "AppProperties")
+    public AppProperties getAppProperties(){
+        return new AppProperties();
     }
 
 }
