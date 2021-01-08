@@ -9,6 +9,7 @@ import pl.kuziow.mobileappwebservices.service.UserService;
 import pl.kuziow.mobileappwebservices.shared.dto.UserDto;
 import pl.kuziow.mobileappwebservices.ui.model.request.UserDetailsRequestModel;
 import pl.kuziow.mobileappwebservices.ui.model.response.ErrorMessages;
+import pl.kuziow.mobileappwebservices.ui.model.response.OperationStatusModel;
 import pl.kuziow.mobileappwebservices.ui.model.response.UserRest;
 import pl.kuziow.mobileappwebservices.service.impl.UserServiceImpl;
 
@@ -63,15 +64,17 @@ public class UserController {
 
         BeanUtils.copyProperties(userDetails, userDto);
 
-        UserDto cupdateddUser = userService.updateUser(userDto);
+        UserDto updatedUser = userService.updateUser(id, userDto);
 
-        BeanUtils.copyProperties(uptadetUser, returnValue);
+        BeanUtils.copyProperties(updatedUser, returnValue);
 
         return returnValue;
     }
 
     @DeleteMapping
-    public String deleteUser() {
-        return "delete user was called";
+    public OperationStatusModel deleteUser(@PathVariable String id) {
+
+        OperationStatusModel returnValue = new OperationStatusModel();
+        return returnValue;
     }
 }

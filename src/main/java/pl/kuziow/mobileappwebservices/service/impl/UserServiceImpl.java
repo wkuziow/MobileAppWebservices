@@ -7,11 +7,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import pl.kuziow.mobileappwebservices.exceptions.UserServiceException;
 import pl.kuziow.mobileappwebservices.io.repositories.UserRepository;
 import pl.kuziow.mobileappwebservices.io.entity.UserEntity;
 import pl.kuziow.mobileappwebservices.shared.Utils;
 import pl.kuziow.mobileappwebservices.shared.dto.UserDto;
 import pl.kuziow.mobileappwebservices.service.UserService;
+import pl.kuziow.mobileappwebservices.ui.model.response.ErrorMessages;
 
 import java.util.ArrayList;
 
@@ -66,6 +68,22 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null) throw new UsernameNotFoundException(userId);
 
         BeanUtils.copyProperties(userEntity, returnValue);
+
+        return returnValue;
+    }
+
+    @Override
+    public UserDto updateUser(String userId, UserDto user) {
+        UserDto returnValue = new UserDto();
+        UserEntity userEntity = userRepository.findByUserId(userId);
+
+        if (userEntity == null) throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+
+        userEntity.setFirstName(user.getFirstName());
+        userEntity.setLastName(user.getLastName());
+
+        UserEntity updatedUserDetails = userRepository.save(userEntity);
+        BeanUtils.copyProperties(updatedUserDetails, returnValue);
 
         return returnValue;
     }
