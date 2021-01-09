@@ -8,9 +8,7 @@ import pl.kuziow.mobileappwebservices.exceptions.UserServiceException;
 import pl.kuziow.mobileappwebservices.service.UserService;
 import pl.kuziow.mobileappwebservices.shared.dto.UserDto;
 import pl.kuziow.mobileappwebservices.ui.model.request.UserDetailsRequestModel;
-import pl.kuziow.mobileappwebservices.ui.model.response.ErrorMessages;
-import pl.kuziow.mobileappwebservices.ui.model.response.OperationStatusModel;
-import pl.kuziow.mobileappwebservices.ui.model.response.UserRest;
+import pl.kuziow.mobileappwebservices.ui.model.response.*;
 import pl.kuziow.mobileappwebservices.service.impl.UserServiceImpl;
 
 import javax.print.attribute.standard.Media;
@@ -71,10 +69,15 @@ public class UserController {
         return returnValue;
     }
 
-    @DeleteMapping
+    @DeleteMapping(path = "/{id}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
     public OperationStatusModel deleteUser(@PathVariable String id) {
 
         OperationStatusModel returnValue = new OperationStatusModel();
+        returnValue.setOperationName(RequestOperationName.DELETE.name());
+        userService.deleteUser(id);
+        returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
         return returnValue;
     }
 }
