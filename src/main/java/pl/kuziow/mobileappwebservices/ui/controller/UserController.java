@@ -1,12 +1,19 @@
 package pl.kuziow.mobileappwebservices.ui.controller;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pl.kuziow.mobileappwebservices.exceptions.UserServiceException;
+import pl.kuziow.mobileappwebservices.service.AddressesService;
 import pl.kuziow.mobileappwebservices.service.UserService;
+import pl.kuziow.mobileappwebservices.shared.dto.AddressDTO;
 import pl.kuziow.mobileappwebservices.shared.dto.UserDto;
 import pl.kuziow.mobileappwebservices.ui.model.request.UserDetailsRequestModel;
 import pl.kuziow.mobileappwebservices.ui.model.response.*;
@@ -15,6 +22,7 @@ import pl.kuziow.mobileappwebservices.service.impl.UserServiceImpl;
 import javax.print.attribute.standard.Media;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -23,6 +31,9 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    AddressesService addressesService;
 
     @GetMapping(path = "/{id}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
@@ -68,7 +79,6 @@ public class UserController {
         BeanUtils.copyProperties(userDetails, userDto);
 
 
-
         UserDto updatedUser = userService.updateUser(id, userDto);
 
         BeanUtils.copyProperties(updatedUser, returnValue);
@@ -105,5 +115,80 @@ public class UserController {
 
         return returnValue;
     }
+
+    @GetMapping(path = "/{id}/addresses",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public CollectionModel<AddressesRest> getUserAddresses(@PathVariable String id) {
+        List<AddressesRest> returnValue = new ArrayList<>();
+        List<AddressDTO> addressesDTO = addressesService.getAddresses(id);
+
+        if (addressesDTO != null && !addressesDTO.isEmpty()) {
+            java.lang.reflect.Type listType = new TypeToken<List<AddressesRest>>() {
+            }.getType();
+            returnValue = new ModelMapper().map(addressesDTO, listType);
+
+            for (AddressesRest addressesRest : returnValue) {
+
+                Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
+                        .getUserAddress(id, addressesRest.getAddressId()))
+                        .withSelfRel();
+                addressesRest.add(selfLink);
+            }
+        }
+
+        Link userLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(id).withRel("user");
+
+        Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
+                .getUserAddresses(id))
+                .withSelfRel();
+
+        return CollectionModel.of(returnValue, userLink, selfLink);
+    }
+
+    @GetMapping(path = "/{userId}/addresses/{addressId}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+
+//poprzedni sposób na dodawania linków do JSONa
+//    public AddressesRest getUserAddress(@PathVariable String userId, @PathVariable String addressId) {
+
+
+    public EntityModel<AddressesRest> getUserAddress(@PathVariable String userId, @PathVariable String addressId) {
+        AddressDTO addressDTO = addressesService.getAddress(addressId);
+        ModelMapper modelMapper = new ModelMapper();
+        AddressesRest returnValue = modelMapper.map(addressDTO, AddressesRest.class);
+        Link userLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).withRel("user");
+
+        Link userAddressLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
+                .getUserAddresses(userId))
+                .withRel("addresses");
+// poprzedni sposób na budowanie linku
+//        Link userAddressLink = WebMvcLinkBuilder.linkTo(UserController.class)
+//                .slash(userId)
+//                .slash("addresses")
+//                .withRel("addresses");
+
+        Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
+                .getUserAddress(userId, addressId))
+                .withSelfRel();
+//poprzedni sposób na budowanie linku
+//        Link selfLink = WebMvcLinkBuilder.linkTo(UserController.class)
+//                .slash(userId)
+//                .slash("addresses")
+//                .slash(addressId)
+//                .withSelfRel();
+
+
+// poprzedni sposób na dodawania linków do JSONa
+//        returnValue.add(userLink);
+//        returnValue.add(userAddressLink);
+//        returnValue.add(selfLink);
+
+
+//poprzedni sposób na dodawania linków do JSONA
+//        return returnValue;
+        return EntityModel.of(returnValue, Arrays.asList(userLink, userAddressLink, selfLink));
+
+    }
+
 
 }

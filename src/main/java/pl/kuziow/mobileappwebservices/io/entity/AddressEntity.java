@@ -15,7 +15,7 @@ public class AddressEntity implements Serializable {
     private long id;
 
     @Column(length = 30, nullable = false)
-    private String addresssId;
+    private String addressId;
 
     @Column(length = 15, nullable = false)
     private String city;
@@ -44,12 +44,12 @@ public class AddressEntity implements Serializable {
         this.id = id;
     }
 
-    public String getAddresssId() {
-        return addresssId;
+    public String getAddressId() {
+        return addressId;
     }
 
-    public void setAddresssId(String addresssId) {
-        this.addresssId = addresssId;
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
     }
 
     public String getCity() {

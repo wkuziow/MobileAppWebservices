@@ -36,12 +36,12 @@ public class UserEntity implements Serializable {
     @OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL)
     private List<AddressEntity> addresses;
 
-    public List<AddressEntity> getAddress() {
+    public List<AddressEntity> getAddresses() {
         return addresses;
     }
 
-    public void setAddress(List<AddressEntity> address) {
-        this.addresses = address;
+    public void setAddresses(List<AddressEntity> addresses) {
+        this.addresses = addresses;
     }
 
     public long getId() {
