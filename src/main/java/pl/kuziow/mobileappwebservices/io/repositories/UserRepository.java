@@ -1,5 +1,6 @@
 package pl.kuziow.mobileappwebservices.io.repositories;
 
+import org.apache.catalina.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
@@ -12,4 +13,6 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
 
 
     UserEntity findByUserId(String userId);
+
+    UserEntity findUserByEmailVerificationToken(String token);
 }
