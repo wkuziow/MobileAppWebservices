@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import pl.kuziow.mobileappwebservices.exceptions.UserServiceException;
 import pl.kuziow.mobileappwebservices.io.repositories.UserRepository;
 import pl.kuziow.mobileappwebservices.io.entity.UserEntity;
+import pl.kuziow.mobileappwebservices.shared.AmazonSES;
 import pl.kuziow.mobileappwebservices.shared.Utils;
 import pl.kuziow.mobileappwebservices.shared.dto.AddressDTO;
 import pl.kuziow.mobileappwebservices.shared.dto.UserDto;
@@ -63,6 +64,8 @@ public class UserServiceImpl implements UserService {
         //BeanUtils.copyProperties(storedUserDetails, returnValue);
 
         UserDto returnValue = modelMapper.map(storedUserDetails, UserDto.class);
+
+        new AmazonSES().verifyEmail(returnValue);
 
         return returnValue;
     }
