@@ -205,5 +205,15 @@ public class UserController {
         return returnValue;
     }
 
+    @PostMapping(path = "/password-reset-request",
+            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public OperationStatusModel requestResey(@RequestBody PasswordResetRequestModel passwordResetRequestModel)  {
+        OperationStatusModel returnValue = new OperationStatusModel();
+
+        boolean operationResult = userService.requestPasswordReset(passwordResetRequestModel.getEmail());
+
+        return returnValue;
+    }
 
 }
