@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.kuziow.mobileappwebservices.exceptions.UserServiceException;
+import pl.kuziow.mobileappwebservices.io.entity.PasswordResetTokenEntity;
+import pl.kuziow.mobileappwebservices.io.repositories.PasswordResetTokenRepository;
 import pl.kuziow.mobileappwebservices.io.repositories.UserRepository;
 import pl.kuziow.mobileappwebservices.io.entity.UserEntity;
 import pl.kuziow.mobileappwebservices.shared.AmazonSES;
@@ -34,6 +36,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Override
     public UserDto createUser(UserDto user) {
@@ -155,6 +160,30 @@ public class UserServiceImpl implements UserService {
                 returnValue = true;
             }
         }
+        return returnValue;
+    }
+
+    @Override
+    public boolean requestPasswordReset(String email) {
+        boolean returnValue = false;
+        UserEntity userEntity = userRepository.findByEmail(email);
+        if (userEntity == null) {
+            return returnValue;
+        }
+        String token = Utils.generatePasswordResetToken(userEntity.getUserId());
+
+        PasswordResetTokenEntity passwordResetTokenEntity = new PasswordResetTokenEntity();
+        passwordResetTokenEntity.setToken(token);
+        passwordResetTokenEntity.setUserDetails(userEntity);
+        passwordResetTokenRepository.save(passwordResetTokenEntity);
+
+        returnValue = new AmazonSES().sendPasswordResetRequest(
+                userEntity.getFirstName(),
+                userEntity.getEmail(),
+                token);
+
+
+
         return returnValue;
     }
 

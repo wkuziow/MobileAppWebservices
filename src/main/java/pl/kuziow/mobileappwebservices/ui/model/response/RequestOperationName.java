@@ -1,7 +1,7 @@
 package pl.kuziow.mobileappwebservices.ui.model.response;
 
 
-public enum RequestOperationName {
-    DELETE, VERIFY_EMAIL;
 
+public enum RequestOperationName {
+    DELETE, VERIFY_EMAIL, REQUEST_PASSWORD_RESET;
 }

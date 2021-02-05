@@ -15,6 +15,7 @@ import pl.kuziow.mobileappwebservices.service.AddressesService;
 import pl.kuziow.mobileappwebservices.service.UserService;
 import pl.kuziow.mobileappwebservices.shared.dto.AddressDTO;
 import pl.kuziow.mobileappwebservices.shared.dto.UserDto;
+import pl.kuziow.mobileappwebservices.ui.model.request.PasswordResetRequestModel;
 import pl.kuziow.mobileappwebservices.ui.model.request.UserDetailsRequestModel;
 import pl.kuziow.mobileappwebservices.ui.model.response.*;
 
@@ -212,6 +213,13 @@ public class UserController {
         OperationStatusModel returnValue = new OperationStatusModel();
 
         boolean operationResult = userService.requestPasswordReset(passwordResetRequestModel.getEmail());
+
+        returnValue.setOperationName(RequestOperationName.REQUEST_PASSWORD_RESET.name());
+        returnValue.setOperationResult(RequestOperationStatus.EROOR.name());
+
+        if (operationResult) {
+            returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        }
 
         return returnValue;
     }
