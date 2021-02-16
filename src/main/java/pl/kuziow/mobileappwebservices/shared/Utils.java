@@ -1,6 +1,7 @@
 package pl.kuziow.mobileappwebservices.shared;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
@@ -44,12 +45,19 @@ public class Utils {
 
 
     public static boolean hasTokenExpired(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(SecurityConstants.getTokenSecret())
-                .parseClaimsJws(token).getBody();
-        Date tokenExpirationDate = claims.getExpiration();
-        Date todayDate = new Date();
-        return tokenExpirationDate.before(todayDate);
+
+        boolean returnValue = false;
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(SecurityConstants.getTokenSecret())
+                    .parseClaimsJws(token).getBody();
+            Date tokenExpirationDate = claims.getExpiration();
+            Date todayDate = new Date();
+            returnValue = tokenExpirationDate.before(todayDate);
+        } catch (ExpiredJwtException exception) {
+            returnValue = true;
+        }
+        return returnValue;
     }
 
     public String generateEmailVerificationToken(String publicUserId) {
