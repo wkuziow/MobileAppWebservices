@@ -26,6 +26,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+//tu wstawiamy crossorigin jeśli chcemy go włączyć dla całego controllera
+//@CrossOrigin(origins = {"http://localhost:8084", "http://localhost:8083"})
 public class UserController {
 
     @Autowired
@@ -191,6 +193,9 @@ public class UserController {
 
     @GetMapping(path = "email-verification",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    //tu wstawiamy crossorigin jeśli chcemy pozwolić tylko jednej metodzie
+    //  @CrossOrigin(origins = "*") //all orgins
+    //@CrossOrigin(origins = {"http://localhost:8084", "http://localhost:8083"}) //specific origins
     public OperationStatusModel verifyEmailToken(@RequestParam(value = "token") String token) {
         OperationStatusModel returnValue = new OperationStatusModel();
         returnValue.setOperationName(RequestOperationName.VERIFY_EMAIL.name());
