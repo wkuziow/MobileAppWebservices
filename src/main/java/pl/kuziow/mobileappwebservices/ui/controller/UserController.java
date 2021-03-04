@@ -2,6 +2,7 @@ package pl.kuziow.mobileappwebservices.ui.controller;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +39,8 @@ public class UserController {
     @Autowired
     AddressesService addressesService;
 
+    @ApiOperation(value = "The Get User Details Web Service Endpoint",
+            notes = "${userControler.GetUser.ApiOperation.Notes}")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "authorization", value = "${userController.authorizationHeader.description}", paramType = "header")
     })
