@@ -16,6 +16,7 @@ import pl.kuziow.mobileappwebservices.io.entity.PasswordResetTokenEntity;
 import pl.kuziow.mobileappwebservices.io.repositories.PasswordResetTokenRepository;
 import pl.kuziow.mobileappwebservices.io.repositories.UserRepository;
 import pl.kuziow.mobileappwebservices.io.entity.UserEntity;
+import pl.kuziow.mobileappwebservices.security.UserPrincipal;
 import pl.kuziow.mobileappwebservices.shared.AmazonSES;
 import pl.kuziow.mobileappwebservices.shared.Utils;
 import pl.kuziow.mobileappwebservices.shared.dto.AddressDTO;
@@ -221,10 +222,10 @@ public class UserServiceImpl implements UserService {
 
         if (userEntity == null) throw new UsernameNotFoundException(email);
 
-
-        return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(),
-                userEntity.getEmailVerificationStatus(),
-                true, true, true, new ArrayList<>());
+        return new UserPrincipal(userEntity);
+//        return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(),
+//                userEntity.getEmailVerificationStatus(),
+//                true, true, true, new ArrayList<>());
         //return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), new ArrayList<>());
     }
 }
