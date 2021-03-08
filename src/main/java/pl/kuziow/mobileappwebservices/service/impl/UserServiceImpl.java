@@ -13,7 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.kuziow.mobileappwebservices.exceptions.UserServiceException;
 import pl.kuziow.mobileappwebservices.io.entity.PasswordResetTokenEntity;
+import pl.kuziow.mobileappwebservices.io.entity.RoleEntity;
 import pl.kuziow.mobileappwebservices.io.repositories.PasswordResetTokenRepository;
+import pl.kuziow.mobileappwebservices.io.repositories.RoleRepository;
 import pl.kuziow.mobileappwebservices.io.repositories.UserRepository;
 import pl.kuziow.mobileappwebservices.io.entity.UserEntity;
 import pl.kuziow.mobileappwebservices.security.UserPrincipal;
@@ -25,6 +27,8 @@ import pl.kuziow.mobileappwebservices.service.UserService;
 import pl.kuziow.mobileappwebservices.ui.model.response.ErrorMessages;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -43,6 +47,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     AmazonSES amazonSES;
+
+    @Autowired
+    RoleRepository roleRepository;
 
     @Override
     public UserDto createUser(UserDto user) {
@@ -69,6 +76,17 @@ public class UserServiceImpl implements UserService {
 
         userEntity.setEmailVerificationToken(utils.generateEmailVerificationToken(publicUserId));
         userEntity.setEmailVerificationStatus(false);
+
+        // Set roles
+        Collection<RoleEntity> roleEntities = new HashSet<>();
+        for (String role : user.getRoles()) {
+            RoleEntity roleEntity = roleRepository.findByName(role);
+            if (roleEntity != null) {
+                roleEntities.add(roleEntity);
+            }
+        }
+
+        userEntity.setRoles(roleEntities);
 
         UserEntity storedUserDetails = userRepository.save(userEntity);
         //BeanUtils.copyProperties(storedUserDetails, returnValue);

@@ -12,10 +12,14 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.kuziow.mobileappwebservices.exceptions.UserServiceException;
 import pl.kuziow.mobileappwebservices.service.AddressesService;
 import pl.kuziow.mobileappwebservices.service.UserService;
+import pl.kuziow.mobileappwebservices.shared.Roles;
 import pl.kuziow.mobileappwebservices.shared.dto.AddressDTO;
 import pl.kuziow.mobileappwebservices.shared.dto.UserDto;
 import pl.kuziow.mobileappwebservices.ui.model.request.PasswordResetModel;
@@ -25,6 +29,7 @@ import pl.kuziow.mobileappwebservices.ui.model.response.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 @RestController
@@ -39,6 +44,7 @@ public class UserController {
     @Autowired
     AddressesService addressesService;
 
+    @PostAuthorize("hasRole('ADMIN') or returnObject.userId == principal.userId")
     @ApiOperation(value = "The Get User Details Web Service Endpoint",
             notes = "${userControler.GetUser.ApiOperation.Notes}")
     @ApiImplicitParams({
@@ -72,6 +78,7 @@ public class UserController {
 
         ModelMapper modelMapper = new ModelMapper();
         UserDto userDto = modelMapper.map(userDetails, UserDto.class);
+        userDto.setRoles(new HashSet<>(Arrays.asList(Roles.ROLE_USER.name())));
 
         UserDto createdUser = userService.createUser(userDto);
         returnValue = modelMapper.map(createdUser, UserRest.class);
@@ -101,6 +108,10 @@ public class UserController {
         return returnValue;
     }
 
+
+    //@PreAuthorize("hasAuthority('DELETE_AUTHORITY')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #id == principal.userId")
+    //@Secured("ROLE_ADMIN")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "authorization", value = "${userController.authorizationHeader.description}", paramType = "header")
     })

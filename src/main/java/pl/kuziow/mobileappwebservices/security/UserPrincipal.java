@@ -1,26 +1,50 @@
 package pl.kuziow.mobileappwebservices.security;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import pl.kuziow.mobileappwebservices.io.entity.AuthorityEntity;
+import pl.kuziow.mobileappwebservices.io.entity.RoleEntity;
 import pl.kuziow.mobileappwebservices.io.entity.UserEntity;
 
+import java.text.CollationElementIterator;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 public class UserPrincipal implements UserDetails {
     private static final long serialVersionUID = 6654245944612188168L;
 
-    UserEntity userEntity;
+    private UserEntity userEntity;
+
+    private String userId;
 
     public UserPrincipal(UserEntity userEntity) {
         this.userEntity = userEntity;
+        this.userId = userEntity.getUserId();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        return null;
+        Collection<GrantedAuthority> authorities = new HashSet<>();
+        Collection<AuthorityEntity> authorityEntities = new HashSet<>();
+
+        //Get user Roles
+        Collection<RoleEntity> roles = userEntity.getRoles();
+
+        if (roles == null) return authorities;
+
+        roles.forEach((role) -> {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+            authorityEntities.addAll(role.getAuthorities());
+        });
+
+        authorityEntities.forEach(authorityEntity -> {
+            authorities.add(new SimpleGrantedAuthority(authorityEntity.getName()));
+        });
+
+        return authorities;
     }
 
     @Override
@@ -51,5 +75,13 @@ public class UserPrincipal implements UserDetails {
     @Override
     public boolean isEnabled() {
         return this.userEntity.getEmailVerificationStatus();
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
